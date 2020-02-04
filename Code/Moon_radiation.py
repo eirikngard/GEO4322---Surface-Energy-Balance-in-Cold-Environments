@@ -52,7 +52,7 @@ E2 = c_h*d2*T2;#initial energy of the second layer [J/m2]
 ###Storing values###
 
 t=1;
-time = np.arange(0,10000,timestep)
+time = np.arange(0,1000,timestep)
 T1_result = []
 T2_result = []
 water_level_result = []
