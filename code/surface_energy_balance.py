@@ -134,6 +134,7 @@ for t in time:
 
     count = count+1
 #%%
+figdir = "../figures/"
 
 fig, ax = plt.subplots()
 plt.plot(T1_result, color='red', label = "Layer 1")
@@ -142,6 +143,7 @@ ax.set_ylabel("Temperature [\u2103]", fontsize = 15)
 ax.set_xlabel("Time [h]", fontsize = 15)
 plt.legend()
 ax.set_title("Surface temperature of Earth", fontsize  = 20)
+plt.savefig(figdir + "surftemp.pdf")
 plt.show()
 
 #SHOULD BE PHASE-SHIFTED. IS NOT, WHY???
@@ -153,6 +155,7 @@ ax[1].plot(surface_runoff_result,color= 'blue')
 ax[1].legend(["Surface Runoff"])
 ax[2].plot(subsurface_runoff_result,color= 'green')
 ax[2].legend(["SubSurface Runoff"])
+plt.savefig(figdir + "waterbalance.pdf")
 plt.show()
 
 #just a small change 
