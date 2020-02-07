@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Jan 17 11:07:26 2020
+Created on Thu Feb  6 13:36:59 2020
+
 @author: Eirik Nordgård
 """
-
-''' Simple program to calcualte surface temperature of the Earth'''
+#Same as the other, only with snow
 
 ###Imports###
 
@@ -23,7 +23,9 @@ d1 = 0.1; #thickness of surface block [m]
 d2 = 0.5; #thickness og second grid cell
 bucket_depth = 0.5; #maximum depth of bucket for water storage
 drainage_constant = 10 #mm/day subsurface runoff for saturation = 1
-albedo = 0.2; #0.6 for snow
+albedo = 0.6; #0.6 for snow
+
+SWE = 0; #snow-water-equivavelt [m] (bucket depth, starts empty in summer)
 
 startTime = 0; #[days]
 endTime = 2*365;
@@ -41,22 +43,22 @@ count=0; #counter
 
 t = startTime; #time [sec]
 T1 = 0; #initial surface temperature [C]
-T2 = 0; #Initial temperature of second layer ground
+#T2 = 0; #Initial temperature of second layer ground
 water_level = bucket_depth/2; #half bucket 
 E1 = c_h*d1*T1;#initial energy of the block [J/m2]
 E2 = c_h*d2*T2;#initial energy of the second layer [J/m2]
 
 ###Storing values###
+SWE_result = []
 
 t=1;
-time = np.arange(startTime,endTime,timestep)#0,730,timestep)#startTime,endTime,timestep
+time = np.arange(0,730,timestep)#startTime,endTime,timestep
 T1_result = []
-T2_result = []
+#T2_result = []
 water_level_result = []
 surface_runoff_result = []
 subsurface_runoff_result = []
 time_result = []
-surface_runoff=0
 
 ###Reading the .mat forcing file###
 
@@ -67,18 +69,16 @@ Sin = finse['Sin']
 Lin = finse['Lin']
 windspeed = finse['windspeed']
 q = finse['q']
+snowfall = finse['snowfall']
 
 #%%
 '''''''''''''''Main program'''''''''''''''''
 
 for t in time:
 
-    if T1>=0 and T2>=0:
-        water_in_rainfall = interpolate_in_time(t,rainfall)/1000/daySec;
-        saturation = water_level/bucket_depth;
-        water_out_subsurface_runoff = drainage_constant/1000/daySec*saturation;
-    else: 
-        water_out_subsurface_runoff = 0;
+    
+    snow_in = interpolate_in_time(t,snowfall)/1000/daySec; #[mm/day]
+
     
     #Incoming solar radiation
     S_in = interpolate_in_time(t,Sin); #from forcing data
@@ -86,35 +86,31 @@ for t in time:
     
     #Outgoing thermal readiation
     L_in = interpolate_in_time(t,Lin);#from forcing data 
-    L_out = sigma*(T1+273.15)**4; # W/m2
+    L_out = sigma*(0+273.15)**4; # W/m2, melting snow is 0 celcius
     
     #Ground heat flux
-    F_cond = -K*(T1-T2)/((d1+d2)/2); #Fouriers law of heat conduction
+    #F_cond = -K*(T1-T2)/((d1+d2)/2); #Fouriers law of heat conduction
+    #removing this because we only concider one layer of snow
     
     #Sensible Heat flux
     T_air = interpolate_in_time(t,Tair);#from forcing data
     wind_speed = interpolate_in_time(t,windspeed);
-    F_sensibleHeat = Q_h(T_air,T1,wind_speed);
+    F_sensibleHeat = Q_h(T_air,0,wind_speed); #surface temperature T1 is 0
     
     #Latent Heat flux/evapotranspiration
     absolute_humidity = interpolate_in_time(t,q);
-    [F_latentHeat, water_out_evapotranspiration] = Q_eq(T1,absolute_humidity,wind_speed,saturation);
+    [F_latentHeat, water_out_evapotranspiration] = Q_eq(0,absolute_humidity,wind_speed,saturation);
+    #line above, water is in reality leaving the system here, not taken into account
     #line above, coulpling betwenn water and energy cycle.
     
     # Surface energy balance - next timestep
-    E1 = E1+timestep*daySec*(S_in-S_out+L_in-L_out+F_cond-F_sensibleHeat-F_latentHeat) #SURFACE ENERGY BALANCE EQ!!!
-    E2 = E2 + timestep*daySec*(-F_cond)
-    T1 = E1/(c_h*d1) #convert energy content to temperature, using heat capacity 
-    T2 = E1/(c_h*d2)
-    
-    #Water Balance
-    if T1>=0 and T2>=0:#if (T1-T2).any()>=0:#T1>=0 and T2>=0:
-        water_level = water_level + timestep*daySec*(water_in_rainfall-water_out_evapotranspiration-water_out_subsurface_runoff);# WATER BALANCE EQUATION
-        surface_runoff = max(0,water_level-bucket_depth);#if water level is higher than bucket 
-        water_level = min(water_level,bucket_depth);#remove water when bucket tops over
-    else:
-        surface_runoff = 0;
-    
+    melt_energy = (S_in-S_out+L_in-L_out-F_sensibleHeat-F_latentHeat);#[J/m2S] #SURFACE ENERGY BALANCE EQ!!!
+
+    #Snow mass Balance
+
+    SWE = SWE + timestep*daySec*(snow_in-);# WATER BALANCE EQUATION
+
+
     #Resulting values
     if count % (outputTimestep/timestep)==0:
         
@@ -123,14 +119,12 @@ for t in time:
         water_level_result.append(water_level)
         surface_runoff_result.append(surface_runoff)#mm/day
         subsurface_runoff_result.append(water_out_subsurface_runoff)#mm/day
-        #try to avoid this append procedure, sloving down the code alot?
         
         #ADD SENSIBLE AND LATENT HEAT HERE SO YOU CAN PLOt THEM
 
     count = count+1
 #%%
-'''Plotting figures'''
-
+'''''''''Plotting ome figures'''''''''
 figdir = "../figures/"
 
 fig, ax = plt.subplots()
@@ -140,7 +134,7 @@ ax.set_ylabel("Temperature [\u2103]", fontsize = 15)
 ax.set_xlabel("Time [h]", fontsize = 15)
 plt.legend()
 ax.set_title("Surface temperature of Earth", fontsize  = 20)
-plt.savefig(figdir + "surftemp.pdf")
+plt.savefig(figdir + "snow_surftemp.pdf")
 plt.show()
 
 #SHOULD BE PHASE-SHIFTED. IS NOT, WHY???
@@ -153,7 +147,7 @@ ax[1].plot(surface_runoff_result,color= 'blue')
 ax[1].legend(["Surface Runoff"])
 ax[2].plot(subsurface_runoff_result,color= 'green')
 ax[2].legend(["SubSurface Runoff"])
-plt.savefig(figdir + "waterbalance.pdf")
+plt.savefig(figdir + "snow_waterbalance.pdf")
 plt.show()
 
 #from this figure, water_level_result and SubSurface is almost identical
