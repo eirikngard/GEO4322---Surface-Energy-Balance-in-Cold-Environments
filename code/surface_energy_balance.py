@@ -116,13 +116,13 @@ for t in time:
         surface_runoff = 0;
     
     #Resulting values
-    if count % (outputTimestep/timestep)==0:
+    if count % (outputTimestep/timestep)==0: #return remainder after division 
         
         T1_result.append(T1)
         T2_result.append(T2)
         water_level_result.append(water_level)
-        surface_runoff_result.append(surface_runoff)#mm/day
-        subsurface_runoff_result.append(water_out_subsurface_runoff)#mm/day
+        surface_runoff_result.append(surface_runoff/timestep*1000)#mm/day
+        subsurface_runoff_result.append(water_out_subsurface_runoff*daySec*1000)#mm/day
         #try to avoid this append procedure, sloving down the code alot?
         
         #ADD SENSIBLE AND LATENT HEAT HERE SO YOU CAN PLOt THEM
@@ -191,8 +191,11 @@ plt.show()
 
 #%% Want to plot the coherence/correlation 
 from sklearn.metrics import r2_score
-
-r2 = r2_score(Tair[0:5840],T1_result)
+plt.figure()
+plt.title("Scatterplot of Tair and T1")
+plt.scatter(Tair[0:5841],T1_result)
+plt.show()
+r2 = r2_score(Tair[0:5841],T1_result)
 print(r2)
 #%%
 #Surface_runoff has wrong units! should be in mm/day (so in range 0-10 mm/day!)
