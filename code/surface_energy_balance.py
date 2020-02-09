@@ -21,7 +21,7 @@ c_h = 2.2e6;#heat capacity of rock [J/m3K]
 K = 3; #Thermal conductivity for rock [wm-1K-1]
 d1 = 0.1; #thickness of surface block [m] 
 d2 = 0.5; #thickness og second grid cell
-bucket_depth = 0.5; #maximum depth of bucket for water storage
+bucket_depth = 0.1; #maximum depth of bucket for water storage
 drainage_constant = 10 #mm/day subsurface runoff for saturation = 1
 albedo = 0.2; #0.6 for snow
 
@@ -56,6 +56,8 @@ water_level_result = []
 surface_runoff_result = []
 subsurface_runoff_result = []
 time_result = []
+
+figdir = "../figures/"
 surface_runoff=0
 
 ###Reading the .mat forcing file###
@@ -129,9 +131,15 @@ for t in time:
 
     count = count+1
 #%%
+'''Complete Water Balance'''
+'''
+WB = rainfall[0:5840] - surface_runoff_result - subsurface_runoff_result    
+plt.figure()
+plt.plot(WB)
+plt.show()
+'''
+#%%
 '''Plotting figures'''
-
-figdir = "../figures/"
 
 fig, ax = plt.subplots()
 plt.plot(T1_result, color='red', label = "Surface")
@@ -182,11 +190,12 @@ relHumidity = finse['relHumidity']
 
 fig, ax =plt.subplots(2,2)
 ax=ax.flatten()
-ax[0].plot(rainfall), ax[0].legend(["Rainfall"])
-ax[1].plot(Tair), ax[1].legend(["Tair_true"])
-ax[1].set_xlim([0,8000])
-ax[2].plot(q), ax[2].legend(["Humidity"])
-ax[3].plot(relHumidity), ax[3].legend(["Relative Humidity"])
+ax[0].plot(rainfall), ax[0].legend(["Rainfall"],prop={'size': 20})
+ax[1].plot(surface_runoff_result, color='k'), ax[1].legend(["Surface Runoff"],prop={'size': 20})
+#ax[1].set_xlim([0,8000])
+ax[2].plot(subsurface_runoff_result,color='brown'), ax[2].legend(["SubSur Runoff"],prop={'size': 20})
+ax[3].plot(water_level_result, color='green'), ax[3].legend(["Water Level"],prop={'size': 20})
+plt.savefig(figdir + 'runoff_metrics.pdf')
 plt.show()
 
 #%% Want to plot the coherence/correlation 
@@ -203,4 +212,18 @@ fig, ax = plt.subplots(2)
 ax[0].plot(surface_runoff_result)
 ax[1].plot(subsurface_runoff_result)
 plt.show()
+#%%
+#want to calculate monthly average rainfall
 
+month = np.arange(0,len(rainfall),30)
+rainfall_month = []
+
+for i in month:
+    rainfall_month.append(rainfall[i:i+1])
+    
+#%%
+
+plt.figure()
+plt.plot(rainfall)
+plt.plot(rainfall_month[0])
+plt.show()
