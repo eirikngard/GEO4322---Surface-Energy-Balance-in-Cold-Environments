@@ -9,4 +9,7 @@ Repository for prject presentation and code in GEO4432.
 - Information from these could also provide usefull: 
     * http://en.cnki.com.cn/Article_en/CJFDTotal-STBC200504004.htm
     * https://onlinelibrary.wiley.com/doi/abs/10.1002/hyp.1261
-    
+    * https://www.sciencedirect.com/science/article/pii/S0022169411006329
+    * https://onlinelibrary.wiley.com/doi/abs/10.1002/hyp.234
+    * https://scholar.google.com/scholar?hl=no&as_sdt=0%2C5&q=rainfall+effect+on+runoff&btnG=
+    * 
