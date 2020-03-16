@@ -1,0 +1,165 @@
+\documentclass[a4paper,11pt,twocolumn]{article}
+\usepackage{lingmacros}
+\usepackage{blindtext}
+\usepackage{tree-dvips}
+\usepackage{amsmath}
+\usepackage{multicol}
+\usepackage{mathtools}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage[table]{xcolor}
+\graphicspath{ {./Latex/} }
+%\usepackage{wrapfig}
+
+\begin{document}
+
+\title{Surface and subsurface runoff in relation to saturation and ground cover}
+\date{2020\\ April}
+\author{Eirik Nordgård\\ Geophysical Institute,\ University of Oslo}
+
+
+\twocolumn[
+\begin{@twocolumnfalse}
+\maketitle
+\begin{abstract}
+et abstrakt
+\end{abstract}
+
+All material for this project may be found on 
+\url{https://github.com/eirikngard/GEO4322---Surface-Energy-Balance-in-Cold-Environments}
+
+\end{@twocolumnfalse}
+]
+\
+\section{Introduction}
+
+Task: Write about subsurface runoff in proportion to saturation. Investigate how different depths of the "bucket" (1=forest, 0.1=close to only bedrock) affects the surface and subsurface runoff. Intense rainfall events should produce large amounts of surface runoff in a shallow bucket, while deeper buckets should deal with this in a more efficient way. Thus, forest regions (deep bucket) should in theory produce less surface runoff and more subsurface runoff. The surface energy balance will be important because it defines when the ground is frozen or not. Frozen ground is represented in the model as zero runoff, so the water balance is heavily affected by the surface energy balance. 
+//
+Angle: Investigate the so called "The Rational Method" mentioned in http://drdbthompson.net/writings/rational.pdf and on page 514 in the book for calculation of design discharge of a small watershed. This model could be runned for differnt surfaces (Table page 519) as an addition to investigating the influence of the bucket depth. This study will give an overview of how soil depth and surface type affect the water balance. 
+ 
+\
+\section{Theory}
+
+\subsection{Station - Finse} 
+
+\subsection{Surface Energy Balance}
+Here you should explain i detail how to energy balance in the model is done. All parts of the code should be explained her. Then, explain why the resulting energies and hence temperatures is important for the water balance. Within this paragraph, explain how the model deals with saturation and how its defined. 
+
+The surface energy balance is calculated for daily timesteps. Initallly, the following forcing termes are givven through point  measurements: Air temperature $T_{air}$, precipitation, incoming shortwave $S_{in} $and longwave radiation $L_{in}$, windspeed and specific humidity.
+Shortwave refelced radiation is calculated using the albedo, $\alpha$, in the following formula;
+\begin{equation}
+	S_{out} = \alpha * S_{in}
+\end{equation}
+
+The albedo used in this model is set to 0.2. Stefan-Boltzmann law is then \textbf{source} used to calculate the longwave outgoing radiation;
+
+\begin{equation}
+	L_{out} = \sigma * (T_{surf}+273.15)^4
+\end{equation}
+where $\sigma$ is the Stefan-Boltzmann constant equal to $5.670*10^8 \; Wm^{-2}K^{-4}$ and $T_{surf}$ is the surface temperature. 
+
+Essential to the surface energy balance is also the conductive ground heat flux between the surface with depth $d_{surf}$, and the layer below below with depth $d_{ground}$. Ideally it is a heat flux between an infinite number of layers, but for simplification only one layer is used in addition to the surface layer. The conductive flux between the first and the second layer is calculated using Fourier's law of heat conduction;
+\begin{equation}
+\begin{multlined}
+F_{cond} = //
+-K*(T_{surf}-T_{ground})/((d_{surf}+d_{ground})/2)
+\end{multlined}
+\end{equation}
+	
+where $K = 3 Wm^{-1}k^{-1}$ is the thermal conductivity of rock \textbf{source}. 
+
+Sensible heat flux is calculated through
+%    Q_h = (-rho*cp*kappa*5*kappa/math.log(z/z0))*((Tair-T1)/%math.log(z/z0));
+this formula. 
+
+Latent heat flux is calculated through 
+%Q_e_pot = -rho_air*L_w*kappa*windspeed*kappa/math.log(z/z0)*(q-satPresWater/p)/math.log(z/z0);
+
+%Q_e = saturation*Q_e_pot;
+
+%water_out_evapotranspiration = Q_e/(L_w*rho_water);
+
+Now the energy balance is done for the surface layer  
+\begin{equation}
+	E_{surf} = E + S_{in}-S_{out}+L_{in}-L_{out}+F_{cond}-F_{sens}-F_{lat}
+	\label{eq:surfenergy}
+\end{equation}
+and the layer below
+\begin{equation}
+E_{ground} = E-F_{cond}
+	\label{eq:groundenergy}
+\end{equation}
+In Eq. (\ref{eq:surfenergy}) and Eq. (\ref{eq:groundenergy}) $E$ is the energy contained in the layer from the previous timestep. Using these two energy terms and the depth of the respective layer, one can obtain the layer temperature through this equation;
+\begin{equation}
+	T = E_{layer}/c_h*depth
+	\label{eq:layertemp}
+\end{equation}
+
+In Eq. (\ref{eq:layertemp}) $c_h = 2.2*10^6 [Jm^{-3}K^{-1}]$ is the heat capacity of rock and $depth$ is the depth of the respective layer.   
+
+
+\subsection{Water Balance}
+The water balance is based on conservation of mass, and describes the flow of water into and out of a closed system. This system may for example be a catchment, a lake or a column of soil. Used in areas like agriculture, runoff assessment or pollution control, making a water balance is a neat way to keep track of where the water in your system has come from and where it is going.  
+//
+To quantitatively study the water balance it is necessary to distinguish the different contributing processes. In its simplest form, the water balance can be written as (from$ https://www.geo.fu-berlin.de/en/v/iwm-network/learning_content/environmental-background/basics_hydrogeography/water_balance/index.html)$;
+\begin{equation}
+	S = P - E - R - G 
+	\label{eq:waterbalance}
+\end{equation}
+
+In Eq. \ref{eq:waterbalance} $P$ is precipitation $[$unit of height$]$, $E$ is evaporation $[$unit of height$]$, $R$ is runoff $[$unit of height$]$ out of the region and $G$ is the groundwater flow or subsurface runoff $[$unit of height$]$. If several point in a grid were to be evaluated the the fluxes $R$ and $G$ should include both incoming and outgoing components. In this model no $R_{in}$ or $G_{in}$ are taken into account for simplification.   
+
+In this model the surface energy balance becomes important as the water balance is only calculated for $T_{surf}$ and $T_{ground}$ $>=0$. This means that once the water is frozen the water balance remains unchanged. Once water is unfrozen a so-called \textit{bucket-model} is applied, meaning that surface runoff $R$ in Eq. (\ref{eq:waterbalance}) is determined as
+\begin{equation}
+	R = max(0, P-E-G-B)
+	\label{eq:runoff}
+\end{equation}  
+where $B$ is the bucket depth, simulating the total soil depth where water can be stored. It is evident from Eq. (\ref{eq:runoff}) that that surface runoff is highly dependent on the bucket depth, but also on the relative sizes of $P$, $E$ and $G$. In particular, one should see a increased runoff for consecutive days with heavy rainfall especially for shallow soil.  
+
+\subsection{Metrics used to evaluated solutions}
+
+The main metric used to evaluate the performance of the neural network compared to the analytic scheme is the Mean Squared Error (MSE). As the name suggests, this metric quantifies the mean of the squares of the error between the prediction $\hat{x}_i$ and the observed value $x_i$. Thus, 
+
+\begin{equation*}
+MSE = \frac{1}{n}\sum_{i=1}^n (x_i - \hat{x}_i)^2
+\end{equation*}
+
+where $n$ is the number of samples. MSE value of 0 would prediction of the observed value, thus the closer to zero the better prediction.  
+ 
+
+\section{Method - implementation of algorithms}
+The code: Starts of with if statement to ensure no freezing in the system. Here saturation is defined as water level divided by the bucket depth. Evapotranspiration is calculated using the $Q\_eq$-script with temperature, absolute humidity, wind speed and saturation as input. Now the water balance is calculated with no-freezing conditions. Water level is adjusted to be rainfall - evapotranspiration - subsurface runoff added to the water level from the previous timestep. Then the surface runoff is defined as the excess water when subtracting the bucket depth from the water level. 
+
+MAIN POINT: Describe how the loop works and about the other helping-scripts in use. 
+
+
+\section{Results}
+
+\section{Discussion}
+
+\section{Future Work}
+ 
+\twocolumn
+[
+\begin{@twocolumnfalse}
+
+
+\medskip
+
+\begin{thebibliography}{9}
+
+\bibitem{boyces}
+\textit{Elementary differential equations and boundary value problems.}\\
+Boyce, William E and Diprima, Richard C and Meade, Douglas B\\
+\textit{WILEY.} GLobal Edition. 355-365, 2017.\\
+ISBN: 978-1-119-38287-4
+
+
+\end{thebibliography} 
+
+\end{@twocolumnfalse}
+\
+]
+
+\end{document}

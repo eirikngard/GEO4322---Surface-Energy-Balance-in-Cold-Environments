@@ -21,7 +21,7 @@ c_h = 2.2e6;#heat capacity of rock [J/m3K]
 K = 3; #Thermal conductivity for rock [wm-1K-1]
 d1 = 0.1; #thickness of surface block [m] 
 d2 = 0.5; #thickness og second grid cell
-bucket_depth = 0.1; #maximum depth of bucket for water storage
+bucket_depth = 0.4; #maximum depth of bucket for water storage
 drainage_constant = 10 #mm/day subsurface runoff for saturation = 1
 albedo = 0.2; #0.6 for snow
 
@@ -77,7 +77,7 @@ for t in time:
 
     if T1>=0 and T2>=0:
         water_in_rainfall = interpolate_in_time(t,rainfall)/1000/daySec;
-        saturation = water_level/bucket_depth;
+        saturation = water_level/bucket_depth;#is this correct? water_in_rainfall insted?
         water_out_subsurface_runoff = drainage_constant/1000/daySec*saturation;
     else: 
         water_out_subsurface_runoff = 0;
@@ -131,6 +131,21 @@ for t in time:
 
     count = count+1
 #%%
+from sklearn import preprocessing 
+surface_runoff_scaled = preprocessing.scale(surface_runoff_result)
+plt.figure()
+plt.plot(surface_runoff_result)
+plt.show()
+#%%
+a = np.zeros(10)
+print(a)
+
+new_a = a
+
+for i in range(0,len(a)):
+    new_a[i] = i
+print(new_a)
+#%%
 '''Complete Water Balance'''
 '''
 WB = rainfall[0:5840] - surface_runoff_result - subsurface_runoff_result    
@@ -138,6 +153,10 @@ plt.figure()
 plt.plot(WB)
 plt.show()
 '''
+plt.figure()
+plt.plot(water_level_result)
+plt.savefig(figdir + "waterlevel3.pdf")
+plt.show()
 #%%
 '''Plotting figures'''
 
@@ -224,6 +243,5 @@ for i in month:
 #%%
 
 plt.figure()
-plt.plot(rainfall)
-plt.plot(rainfall_month[0])
+plt.plot(surface_runoff_result)
 plt.show()
