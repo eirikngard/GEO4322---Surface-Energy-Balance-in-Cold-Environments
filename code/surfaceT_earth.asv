@@ -177,5 +177,4 @@ title('Rainfall at Finse')
 xlabel('Time [s]'), ylabel('Rainfall [mm/day]')
 datetick('x', 'yyyy')
 %%
-figure
-plot(T_1_store)
+fig

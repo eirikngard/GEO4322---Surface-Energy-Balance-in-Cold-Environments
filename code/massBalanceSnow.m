@@ -1,6 +1,6 @@
 %calculates the surface temperature of the Earth using radiation, ground
 %heat flux and sensible heat flux
-
+% bucket filled with snow, putting water 
 %parameters
 albedo = 0.6; %albedo of snow surface
 
@@ -13,6 +13,7 @@ outputTimestep = 3/24; %every 3h
 sigma = 5.67e-8; %Stefan-Boltzmann constant [J/m2 K4]
 daySec = 24 .* 60 .*60; %number of seconds in one day [sec]
 L_f = 334 .* 1e6; %latent heat of freezing/melting of water [J/m3]
+%takes more energy to evaporate water than to melt ice
 
 %initialization for t = 0
 t = startTime; %time [sec]
@@ -41,6 +42,7 @@ for t = startTime:timestep:endTime
     %incoming and ougoing (thermal) radiation
     L_in = interpolate_in_time(t, Lin);  %from forcing data
     L_out = sigma .* (0+273.15).^4; %from Stefan-Botzman law [J/ sec m2] - melting ice has 0 degreeC
+    % melt turn under assumption that temp=0, snow is melting
     
     %sensible heat flux
     T_air = interpolate_in_time(t, Tair);  %from forcing data
@@ -53,9 +55,9 @@ for t = startTime:timestep:endTime
     
     %time integration - advance to next timestep
     
-    %surface energy balance 
+    %surface energy balance / mass balance
     melt_energy = S_in - S_out + L_in - L_out - F_sensibleHeat - F_latentHeat; %  SURFACE ENERGY BALANCE EQUATION!!!! [J/(m2 sec)]
-    snow_melt_out = melt_energy ./ L_f; %[m/sec]
+    snow_melt_out = melt_energy ./ L_f; %[m/sec], convert energy to mass
     snow_melt_out = max(snow_melt_out, 0); %only of melt occurs!!
     
     %snow mass balance
