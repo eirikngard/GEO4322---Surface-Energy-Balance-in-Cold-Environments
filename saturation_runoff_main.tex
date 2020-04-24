@@ -9,6 +9,7 @@
 \usepackage{graphicx}
 \usepackage{amssymb}
 \usepackage[table]{xcolor}
+\usepackage{textcomp}
 \graphicspath{ {./Latex/} }
 %\usepackage{wrapfig}
 
@@ -23,7 +24,7 @@
 \begin{@twocolumnfalse}
 \maketitle
 \begin{abstract}
-et abstrakt
+An abstract containing main aim and findings of the paper.
 \end{abstract}
 
 All material for this project may be found on 
@@ -34,14 +35,13 @@ All material for this project may be found on
 \
 \section{Introduction}
 
-Task: Write about subsurface runoff in proportion to saturation. Investigate how different depths of the "bucket" (1=forest, 0.1=close to only bedrock) affects the surface and subsurface runoff. Intense rainfall events should produce large amounts of surface runoff in a shallow bucket, while deeper buckets should deal with this in a more efficient way. Thus, forest regions (deep bucket) should in theory produce less surface runoff and more subsurface runoff. The surface energy balance will be important because it defines when the ground is frozen or not. Frozen ground is represented in the model as zero runoff, so the water balance is heavily affected by the surface energy balance. 
-//
-Angle: Investigate the so called "The Rational Method" mentioned in http://drdbthompson.net/writings/rational.pdf and on page 514 in the book for calculation of design discharge of a small watershed. This model could be runned for differnt surfaces (Table page 519) as an addition to investigating the influence of the bucket depth. This study will give an overview of how soil depth and surface type affect the water balance. 
- 
+The main scope of the paper is to investigate how soil water saturation affects the surface and subsurface runoff in a simple bucket model with varying soil depth. \textit{Bucket depth} is analogous to \textit{soil depth}, meaning that a bucket with water represents soil on top of bedrock on a confined area. Like in nature, pouring water into the bucket beyond its capacity will cause surface runoff. This feature is modelled in its simplest way by defining the saturation of the bucket to be water level divided by bucket depth. Hence, a deeper bucket should experience less surface runoff compared to a shallow bucket. Subsurface flow is also modelled with a linear relationship to the saturation. The surface energy balance is of great importance to the bucket model since it dictates the water balance by defining whether the ground is frozen or not. In reality, surface runoff may occur even if the ground is frozen, but for simplicity the model allows no surface runoff once the ground temperature is below zero. 
+
+\
+The paper is structured as follows. Theory in section 2. Section 3 is method. Section 4 is results and section 5 is discussion. Last, section 6 is future work. 
 \
 \section{Theory}
 
-\subsection{Station - Finse} 
 
 \subsection{Surface Energy Balance}
 Here you should explain i detail how to energy balance in the model is done. All parts of the code should be explained her. Then, explain why the resulting energies and hence temperatures is important for the water balance. Within this paragraph, explain how the model deals with saturation and how its defined. 
@@ -126,18 +126,58 @@ MSE = \frac{1}{n}\sum_{i=1}^n (x_i - \hat{x}_i)^2
 \end{equation*}
 
 where $n$ is the number of samples. MSE value of 0 would prediction of the observed value, thus the closer to zero the better prediction.  
- 
 
-\section{Method - implementation of algorithms}
+\subsection{Area}
+In this study forcing data from Finse is used in the bucket model. Located at 1222 meters above sea level, on the northwestern part of the Hardangervidda plateau in Norway, Finse has a rather oceanic climate with mild winters for its altitude and cool summers \cite{finse}. Winter temperatures in the range of -20\textdegree C and summer temperatures in the range of 20\textdegree C is not uncommon. Monthly average precipitation was around 80mm between March 2019 and March 2020, peaking in September and October. Finse is very exposed to winds and frequently experiences winds in the range of 15-25 m/s \cite{yr}. 
+
+\textbf{Something of choice of soil depth}. 
+Two experiments will be done with the bucket model, one with a fixed initial water level for each bucket depth and one with a initial water level equal to half the bucket depth for each bucket depth. For the fixed bucket depth 0.1m is chosen. Finse is well above the tree line, and with very sparse vegetation and significant areas of bare mountain this serves as a estimate of averaged initial water content.     
+
+\section{Method}
+\subsection{Implementation of Algorithm}
 The code: Starts of with if statement to ensure no freezing in the system. Here saturation is defined as water level divided by the bucket depth. Evapotranspiration is calculated using the $Q\_eq$-script with temperature, absolute humidity, wind speed and saturation as input. Now the water balance is calculated with no-freezing conditions. Water level is adjusted to be rainfall - evapotranspiration - subsurface runoff added to the water level from the previous timestep. Then the surface runoff is defined as the excess water when subtracting the bucket depth from the water level. 
+
 
 MAIN POINT: Describe how the loop works and about the other helping-scripts in use. 
 
+\subsection{Forcing Data}
+
+This simple \textit{bucket model} used in this project is dependent on forcing to function as intended. Windspeed, air temperature, rainfall, relative humidity, specific humidity, shortwave incoming radiation and longwave incoming radiation from 2nd of October 2014 to 16th of March 2019 is provided by the Applications of Research to Operations at Mesoscale (AROME) model. This convection-permitting model is a high resolution model operated by MetCoOp, an collaborative effort between the Swedish Meteorological and Hydrological Institute and the Norwegian Meteorological Institute \cite{muller}. 
+
 
 \section{Results}
+Explain the weather situation/data over the two years. Especially precipitation (with or without freezing.)
+
+Show in Figure (\ref{fig:forcing}), the forcing data used in the model includes a clear annual cycle in temperature. Temperatures ranges from around -25\textdegree C in winter to around 18\textdegree C in summer. The precipitation data in grey are daily values for every 3-hours. The AROME model is known (SOURCE) to overestimate precipitation in mountain regions and in general to overestimate large precipitation events, but even taken this into account the gray line values are extremely high for this area. Therefore, running a moving average for every day results in the black line, showing the average daily precipitation values with maxima around 90 mm/day. These values appear to be correct for the area in question.   
+
+\begin{figure}[h]
+	\centering 
+	\includegraphics[width=0.5\textwidth]{figures/forcing_finse}
+	\caption{Temperature (red) and precipitation(grey) data from forcing file. Daily mean values (black) printed for readability.}
+	\label{fig:forcing}
+\end{figure}
+
+The precipitation output from the bucket model results in Figure(\ref{fig:precip}). Now the precipitation flattens once the ground temperature drops below zero. The step-like feature in the second winter arises because the precipitation value is kept at the last recorded value with temperature above zero degrees.
+
+\begin{figure}[h]
+	\centering 
+	\includegraphics[width=0.5\textwidth]{figures/precip}
+	\caption{Surface temperature (red) and precipitation(black) from the bucket model.}
+	\label{fig:precip}
+\end{figure}
+
+Once we have established that the model is not allowing freezing, we look at how the soil deals with precipitation events. First, the bucket model is set with a constant initial water level of 0.1 meters. Figure(\ref{fig:bucket_fixed}) shows how the water level is rising after each precipitation event, but also how it drops if the precipitation ends. Now the flat part of the curves have two physical interpretations. Firstly, no precipitation occurs in these time slots as indicated by the grey line in the figure. Secondly,the bucket may have become full and is unable to store more water. Already in the first zero-precipitation window the shallowest bucket(0.2 meters)became full. The 0.4 meters deep bucket was close to full, but managed some more centimetres before getting filled in the first summer.
+One interesting feature is that both the 0.8 meters and 1.0 meters buckets makes it though the entire summer without reaching their limits. \textbf{Some source on if this is usual or not?}. The 0.6 meter bucket reaches saturation sometime towards the end of the summer. 
+
+\begin{figure}[h]
+	\centering 
+	\includegraphics[width=0.5\textwidth]{figures/bucket_fixed}
+	\caption{Time evolution of water level in soil dependent on the bucket depth with an fixed initial water level of 0.1 meters. Gray lines is precipitation for reference.}
+	\label{fig:bucket_fixed}
+\end{figure}
 
 \section{Discussion}
-
+The fact that the 0.6 meter bucket in  Figure(\ref{fig:bucket_fixed}) almost made it through the entire summer without getting saturated may indicate that there are some other important processes for removal of water at Finse in action.  
 \section{Future Work}
  
 \twocolumn
@@ -149,14 +189,22 @@ MAIN POINT: Describe how the loop works and about the other helping-scripts in u
 
 \begin{thebibliography}{9}
 
-\bibitem{boyces}
-\textit{Elementary differential equations and boundary value problems.}\\
-Boyce, William E and Diprima, Richard C and Meade, Douglas B\\
-\textit{WILEY.} GLobal Edition. 355-365, 2017.\\
-ISBN: 978-1-119-38287-4
+\bibitem{muller}
+\textit{AROME-MetCoOp: A Nordic Convective-Scale Operational
+Weather Prediction Model}\\
+MÜller et al. 2017\\
+URL: \url{https://doi.org/10.1175/WAF-D-16-0099.1}
+
+\bibitem{finse}
+Webpage of Finse Alpine Research Ceenter\\
+URL: \url{https://www.finse.uio.no/about/location/}
+
+\bibitem{yr}
+URL: \url{https://www.yr.no/nb/historikk/graf/1-111123/Norge/Vestland/Ulvik/Finse}
 
 
 \end{thebibliography} 
+
 
 \end{@twocolumnfalse}
 \
