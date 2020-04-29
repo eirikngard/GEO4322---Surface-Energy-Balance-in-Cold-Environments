@@ -8,22 +8,22 @@ result_subsurface = []
 result_evaporation = []
 result_saturation = []
 
-for bucket_depth = 0.2:0.2:1,2;
-    water_level = 0.1;
-    %disp(albedo) %added just to see if t completes each iteration
+%for bucket_depth = 0.2:0.2:1,2;
+for drainage_const = 0.5:0.5:3; 
+    %water_level = 0.1;
     c_h = 2.2e6; % heat capacity of rock [J/m3K]
     K = 3; % thermal conductivity of rock [W/m K]
     d_1 = 0.1; % thickness of surface grid cell [m]
     d_2 = 0.5; %thickness of second grid cell [m]
     albedo = 0.2; %albedo of surface
-    %bucket_depth = 0.5; % maximum depth of baucket for storage of water [m]
+    bucket_depth = 0.5; % maximum depth of baucket for storage of water [m]
     drainage_constant = 1; %mm/day subsurface runoff for saturation = 1
 
     startTime = 0; % [days]
     endTime = 2.*365;
     timestep = 3/24 ./100; %?
     outputTimestep = 3/24; %every 3h
-    %1 gives more values, so 3 gives 3h accumulated value
+
     %constants
     sigma = 5.67e-8; %Stefan-Boltzmann constant [J/m2 K4]
     daySec = 24 .* 60 .*60; %number of seconds in one day [sec]
@@ -32,7 +32,7 @@ for bucket_depth = 0.2:0.2:1,2;
     t = startTime; %time [sec]
     T_1 = 0; %initial surface grid cell temperature [degree C];
     T_2 = 0; %initial temperature of second grid cell [degree C];
-    %water_level = bucket_depth ./ 2; %half full bucket
+    water_level = bucket_depth ./ 2; %half full bucket
     E_1 = c_h .* d_1 .* T_1; % initial energy of the block [J/m2]
     E_2 = c_h .* d_2 .* T_2; % initial energy of the block [J/m2]
 
@@ -138,7 +138,7 @@ title('Water Level with varying bucket depth')
 xlabel('Time [3h]'), ylabel('Water level [m]')
 lgd = legend('0.2','0.4','0.6','0.8','1.0','Precip','Location','northwest')
 title(lgd,'Bucket Depth [m]')
-saveas(gcf,[figurepath,'/bucket_depth_fixed.pdf']);
+%saveas(gcf,[figurepath,'/bucket_depth_fixed1.pdf']);
 %%
 figure, hold all, grid on
 R = movmean(result_surface,8,'Endpoints','discard')
@@ -151,7 +151,7 @@ title('Surface Runoff with varying bucket depth')
 xlabel('Time [3h]'), ylabel('Surface Runoff [mm/day]')
 lgd = legend('0.2','0.4','0.6','0.8','1.0','Precip','Location','northwest')
 title(lgd,'Bucket Depth [m]')
-%saveas(gcf,[figurepath,'/runoff.pdf']);
+%saveas(gcf,[figurepath,'/runoff1.pdf']);
 %%
 figure
 hold all
@@ -187,7 +187,7 @@ plot(P, '-','linewidth',1)
 legend("Temp", "Precip. (data)","Precip. (daily averaged)")
 xlabel('Time [3h]')
 title("Forcing data, Finse")
-saveas(gcf,[figurepath,'/forcing_finse.pdf']);
+saveas(gcf,[figurepath,'/forcing_finse1.pdf']);
 
 %%
 P1 = movmean(rain_store*1000*daySec,8,'Endpoints','discard')
@@ -233,3 +233,7 @@ plot(test)
 %caculate rates at with saturation increasesdecreases
 %% streamflow vs soil moisture, som de gjør i den teksten 
 
+%%
+figure
+hold all
+plot(result_surface(:,1)), plor(result_surface(:,4))

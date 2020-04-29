@@ -69,16 +69,26 @@ F_{cond} = //
 	
 where $K = 3 Wm^{-1}k^{-1}$ is the thermal conductivity of rock \textbf{source}. 
 
-Sensible heat flux is calculated through
-%    Q_h = (-rho*cp*kappa*5*kappa/math.log(z/z0))*((Tair-T1)/%math.log(z/z0));
-this formula. 
+Sensible heat flux is calculated through the following equation: 
 
-Latent heat flux is calculated through 
-%Q_e_pot = -rho_air*L_w*kappa*windspeed*kappa/math.log(z/z0)*(q-satPresWater/p)/math.log(z/z0);
+\begin{equation}
+Q_h = (-\rho{air}*cp*\kappa^2*u/log(z/z_0))*((T_{air}-T_1)/log(z/z_0));
+\end{equation}
 
-%Q_e = saturation*Q_e_pot;
+Potential latent heat is calculated through 
+\begin{equation}
+Q_{e pot} = -\rho_{air}*L_w*\kappa^2*u/log(z/z_0)*(q-e_s/p)/log(z/z_0)
+\end{equation}
+where the latent heat flux is calculated like this:
+\begin{equation}
+Q_e = saturation*Q_{e pot}
+\end{equation}
 
-%water_out_evapotranspiration = Q_e/(L_w*rho_water);
+From here the evapotranspiration is given by 
+
+\begin{equation}
+Evap = Q_e/(L_w*\rho_{water})
+\end{equation}
 
 Now the energy balance is done for the surface layer  
 \begin{equation}
@@ -102,7 +112,7 @@ In Eq. (\ref{eq:layertemp}) $c_h = 2.2*10^6 [Jm^{-3}K^{-1}]$ is the heat capacit
 \subsection{Water Balance}
 The water balance is based on conservation of mass, and describes the flow of water into and out of a closed system. This system may for example be a catchment, a lake or a column of soil. Used in areas like agriculture, runoff assessment or pollution control, making a water balance is a neat way to keep track of where the water in your system has come from and where it is going.  
 //
-To quantitatively study the water balance it is necessary to distinguish the different contributing processes. In its simplest form, the water balance can be written as (from$ https://www.geo.fu-berlin.de/en/v/iwm-network/learning_content/environmental-background/basics_hydrogeography/water_balance/index.html)$;
+To quantitatively study the water balance it is necessary to distinguish the different contributing processes. In its simplest form, the water balance can be written as \cite{dingman} 
 \begin{equation}
 	S = P - E - R - G 
 	\label{eq:waterbalance}
@@ -116,16 +126,6 @@ In this model the surface energy balance becomes important as the water balance 
 	\label{eq:runoff}
 \end{equation}  
 where $B$ is the bucket depth, simulating the total soil depth where water can be stored. It is evident from Eq. (\ref{eq:runoff}) that that surface runoff is highly dependent on the bucket depth, but also on the relative sizes of $P$, $E$ and $G$. In particular, one should see a increased runoff for consecutive days with heavy rainfall especially for shallow soil.  
-
-\subsection{Metrics used to evaluated solutions}
-
-The main metric used to evaluate the performance of the neural network compared to the analytic scheme is the Mean Squared Error (MSE). As the name suggests, this metric quantifies the mean of the squares of the error between the prediction $\hat{x}_i$ and the observed value $x_i$. Thus, 
-
-\begin{equation*}
-MSE = \frac{1}{n}\sum_{i=1}^n (x_i - \hat{x}_i)^2
-\end{equation*}
-
-where $n$ is the number of samples. MSE value of 0 would prediction of the observed value, thus the closer to zero the better prediction.  
 
 \subsection{Area}
 In this study forcing data from Finse is used in the bucket model. Located at 1222 meters above sea level, on the northwestern part of the Hardangervidda plateau in Norway, Finse has a rather oceanic climate with mild winters for its altitude and cool summers \cite{finse}. Winter temperatures in the range of -20\textdegree C and summer temperatures in the range of 20\textdegree C is not uncommon. Monthly average precipitation was around 80mm between March 2019 and March 2020, peaking in September and October. Finse is very exposed to winds and frequently experiences winds in the range of 15-25 m/s \cite{yr}. 
@@ -167,19 +167,37 @@ The precipitation output from the bucket model results in Figure(\ref{fig:precip
 \end{figure}
 
 Once we have established that the model is not allowing freezing, we look at how the soil deals with precipitation events. First, the bucket model is set with a constant initial water level of 0.1 meters. Figure(\ref{fig:bucket_fixed}) shows how the water level is rising after each precipitation event, but also how it drops if the precipitation ends. Now the flat part of the curves have two physical interpretations. Firstly, no precipitation occurs in these time slots as indicated by the grey line in the figure. Secondly,the bucket may have become full and is unable to store more water. Already in the first zero-precipitation window the shallowest bucket(0.2 meters)became full. The 0.4 meters deep bucket was close to full, but managed some more centimetres before getting filled in the first summer.
-One interesting feature is that both the 0.8 meters and 1.0 meters buckets makes it though the entire summer without reaching their limits. \textbf{Some source on if this is usual or not?}. The 0.6 meter bucket reaches saturation sometime towards the end of the summer. 
+One interesting feature is that both the 0.8 meters and 1.0 meters buckets makes it though the entire summer without reaching their limits. \textbf{Some source on if this is usual or not?}. The 0.6 meter bucket reaches saturation sometime towards the end of the first summer. 
 
 \begin{figure}[h]
 	\centering 
-	\includegraphics[width=0.5\textwidth]{figures/bucket_fixed}
-	\caption{Time evolution of water level in soil dependent on the bucket depth with an fixed initial water level of 0.1 meters. Gray lines is precipitation for reference.}
+	\includegraphics[width=0.5\textwidth]{figures/bucket_depth_fixed}
+	\caption{Water level in soil dependent on the bucket depth with an fixed initial water level of 0.1 meters. Gray line is precipitation for reference.}
 	\label{fig:bucket_fixed}
 \end{figure}
 
+Since all of the buckets eventually reaches saturation, surface runoff will occur as shown in Figure (\ref{fig:runoff}). The runoff values are relatively high compared to the precipitation values. This is expected since the soil layer in this case is thin. Each of the buckets experiences runoff where one deeper bucket also experiences runoff. Towards the end of the plot in Figure (\ref{fig:runoff}) it may look like only the deepest bucket experiences runoff, but since the deepest bucket experiences runoff at this point in time, all of the other buckets also experiences runoff. 
+
+\begin{figure}[h]
+	\centering 
+	\includegraphics[width=0.5\textwidth]{figures/runoff}
+	\caption{Surface runoff with varying bucket depth. Gray line is precipitation for reference.}
+	\label{fig:runoff}
+\end{figure} 
+
 \section{Discussion}
-The fact that the 0.6 meter bucket in  Figure(\ref{fig:bucket_fixed}) almost made it through the entire summer without getting saturated may indicate that there are some other important processes for removal of water at Finse in action.  
+The fact that the 0.6 meter bucket in  Figure(\ref{fig:bucket_fixed}) almost made it through the entire summer without getting saturated may indicate that there are some other important processes for removal of water at Finse in action. Evaporation may attribute to this. Resulting values for evaporation displayed in Figure (\ref{fig:evaporation}) reveals daily values for evaporation between 5 and 10 mm to be quite common.    
+\begin{figure}[h]
+	\centering 
+	\includegraphics[width=0.5\textwidth]{figures/evaporation}
+	\caption{Evaporation with varying bucket depth. Gray line is precipitation for reference.}
+	\label{fig:evaporation}
+\end{figure} 
+\\
+
 \section{Future Work}
- 
+calculate how much runoff we have in percent from precipitation
+caculate rates at with saturation increasesdecreases
 \twocolumn
 [
 \begin{@twocolumnfalse}
@@ -190,14 +208,21 @@ The fact that the 0.6 meter bucket in  Figure(\ref{fig:bucket_fixed}) almost mad
 \begin{thebibliography}{9}
 
 \bibitem{muller}
+MÜller et al. 2017\\
 \textit{AROME-MetCoOp: A Nordic Convective-Scale Operational
 Weather Prediction Model}\\
-MÜller et al. 2017\\
 URL: \url{https://doi.org/10.1175/WAF-D-16-0099.1}
+
+\bibitem{dingman}
+S. Lawrence Dingman \\
+\textit{Physical Hydrology}\\
+Third Edition \\
+Waveland Press, 2015.\\
 
 \bibitem{finse}
 Webpage of Finse Alpine Research Ceenter\\
-URL: \url{https://www.finse.uio.no/about/location/}
+URL: \url{https://www.finse.uio.no/about/location/}\\
+Visited 20th of April 2020
 
 \bibitem{yr}
 URL: \url{https://www.yr.no/nb/historikk/graf/1-111123/Norge/Vestland/Ulvik/Finse}
