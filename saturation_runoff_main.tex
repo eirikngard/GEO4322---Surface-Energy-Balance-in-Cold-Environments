@@ -15,7 +15,7 @@
 
 \begin{document}
 
-\title{Surface and subsurface runoff in relation to saturation and ground cover}
+\title{Surface runoff in relation to soil saturation in a simple SEB- model.}
 \date{2020\\ April}
 \author{Eirik Nordgård\\ Geophysical Institute,\ University of Oslo}
 
@@ -24,7 +24,7 @@
 \begin{@twocolumnfalse}
 \maketitle
 \begin{abstract}
-An abstract containing main aim and findings of the paper.
+In this paper a simple bucket model has been used to model the surface energy balance and the water balance with different soil depths over a two-year period. Water level, saturation level and surface runoff is analysed for bucket depths ranging from 0.2 to 1.0 meters. The deeper the soil layer was, the more precipitation was acquired to reach saturation. With a freezing condition prohibiting the soil water level to rise during periods of temperatures below zero, the deepest bucket almost went through the entire model run without reaching saturation for a drainage constant of 1 mm/day.     
 \end{abstract}
 
 All material for this project may be found on 
@@ -35,115 +35,130 @@ All material for this project may be found on
 \
 \section{Introduction}
 
-The main scope of the paper is to investigate how soil water saturation affects the surface and subsurface runoff in a simple bucket model with varying soil depth. \textit{Bucket depth} is analogous to \textit{soil depth}, meaning that a bucket with water represents soil on top of bedrock on a confined area. Like in nature, pouring water into the bucket beyond its capacity will cause surface runoff. This feature is modelled in its simplest way by defining the saturation of the bucket to be water level divided by bucket depth. Hence, a deeper bucket should experience less surface runoff compared to a shallow bucket. Subsurface flow is also modelled with a linear relationship to the saturation. The surface energy balance is of great importance to the bucket model since it dictates the water balance by defining whether the ground is frozen or not. In reality, surface runoff may occur even if the ground is frozen, but for simplicity the model allows no surface runoff once the ground temperature is below zero. 
-
-\
+The main scope of the paper is to investigate how soil water saturation affects the surface and subsurface runoff in a simple bucket model with varying soil depth. \textit{Bucket depth} is analogous to \textit{soil depth}, meaning that a bucket with water represents soil on top of bedrock on a confined area. Like in nature, pouring water into the bucket beyond its capacity will cause surface runoff. This feature is modelled in its simplest way by defining the saturation of the bucket to be water level divided by bucket depth. Hence, a deeper bucket should experience less surface runoff compared to a shallow bucket. Subsurface flow is also modelled with a linear relationship to the saturation. The surface energy balance 
+\\
+\\
+\\
+\\
+\\
+is of great importance to the bucket model since it dictates the water balance by defining whether the ground is frozen or not. In reality, surface runoff may occur even if the ground is frozen, but for simplicity the model allows no surface runoff once the ground temperature is below zero. 
+\\
 The paper is structured as follows. Theory in section 2. Section 3 is method. Section 4 is results and section 5 is discussion. Last, section 6 is future work. 
 \
 \section{Theory}
 
 
 \subsection{Surface Energy Balance}
-Here you should explain i detail how to energy balance in the model is done. All parts of the code should be explained her. Then, explain why the resulting energies and hence temperatures is important for the water balance. Within this paragraph, explain how the model deals with saturation and how its defined. 
+\textbf{Within this paragraph, explain how the model deals with saturation and how its defined. }
 
-The surface energy balance is calculated for daily timesteps. Initallly, the following forcing termes are givven through point  measurements: Air temperature $T_{air}$, precipitation, incoming shortwave $S_{in} $and longwave radiation $L_{in}$, windspeed and specific humidity.
-Shortwave refelced radiation is calculated using the albedo, $\alpha$, in the following formula;
+The surface energy balance is calculated for daily timesteps. Initially, the following forcing terms are given through point  measurements: Air temperature $T_{air}$, precipitation, incoming shortwave $S_{in} $and longwave radiation $L_{in}$, windspeed and specific humidity.
+Shortwave refelced radiation is calculated using the albedo, $\alpha$, in Eq. (\ref{eq:shortwave}).
 \begin{equation}
 	S_{out} = \alpha * S_{in}
+	\label{eq:shortwave}
 \end{equation}
 
-The albedo used in this model is set to 0.2. Stefan-Boltzmann law is then \textbf{source} used to calculate the longwave outgoing radiation;
+Albedo is set to 0.2. Stefan-Boltzmann law is then \textbf{source} used to calculate the longwave outgoing radiation in Eq. (\ref{eq:longwave}).
 
 \begin{equation}
 	L_{out} = \sigma * (T_{surf}+273.15)^4
+	\label{eq:longwave}
 \end{equation}
 where $\sigma$ is the Stefan-Boltzmann constant equal to $5.670*10^8 \; Wm^{-2}K^{-4}$ and $T_{surf}$ is the surface temperature. 
 
-Essential to the surface energy balance is also the conductive ground heat flux between the surface with depth $d_{surf}$, and the layer below below with depth $d_{ground}$. Ideally it is a heat flux between an infinite number of layers, but for simplification only one layer is used in addition to the surface layer. The conductive flux between the first and the second layer is calculated using Fourier's law of heat conduction;
+Essential to the surface energy balance is also the conductive ground heat flux between the surface with depth $d_{surf}$, and the layer below below with depth $d_{ground}$. Ideally a model should use any layers, but for simplification only one layer is used in addition to the surface layer. The conductive heat flux between the first and the second layer is calculated using Fourier's law of heat conduction:
+
 \begin{equation}
-\begin{multlined}
-F_{cond} = //
--K*(T_{surf}-T_{ground})/((d_{surf}+d_{ground})/2)
-\end{multlined}
+F_{cond} = 
+-K*\frac{T_{surf}-T_{ground}}{(d_{surf}+d_{ground})/2}
 \end{equation}
-	
+
 where $K = 3 Wm^{-1}k^{-1}$ is the thermal conductivity of rock \textbf{source}. 
 
-Sensible heat flux is calculated through the following equation: 
+Sensible heat flux is calculated with Eq. (\ref{eq:sensibleheat})
 
 \begin{equation}
-Q_h = (-\rho{air}*cp*\kappa^2*u/log(z/z_0))*((T_{air}-T_1)/log(z/z_0));
+Q_h = \frac{-\rho_{air}c_p\kappa^2u}{log(z/z_0)}* \frac{(T_{air}-T_1)}{log(z/z_0)}
+\label{eq:sensibleheat}
 \end{equation}
 
 Potential latent heat is calculated through 
 \begin{equation}
-Q_{e pot} = -\rho_{air}*L_w*\kappa^2*u/log(z/z_0)*(q-e_s/p)/log(z/z_0)
+Q_{e pot} = \frac{-\rho_{air}*L_w*\kappa^2*u}{log(z/z_0)}*\frac{(q-e_s)/p}{log(z/z_0)}
 \end{equation}
-where the latent heat flux is calculated like this:
+where the latent heat flux is dependent on saturation, $S$ and is calculated like this:
 \begin{equation}
-Q_e = saturation*Q_{e pot}
-\end{equation}
-
-From here the evapotranspiration is given by 
-
-\begin{equation}
-Evap = Q_e/(L_w*\rho_{water})
+Q_e = S*Q_{e pot}
+\label{eq:latentheat}
 \end{equation}
 
-Now the energy balance is done for the surface layer  
+In Eq. (\ref{eq:latentheat}) saturation is defined to be
 \begin{equation}
-	E_{surf} = E + S_{in}-S_{out}+L_{in}-L_{out}+F_{cond}-F_{sens}-F_{lat}
+S = \frac{Water Level}{Bucket Depth}
+\end{equation}
+
+To be used in the water balance, the evaporation, $E$, is: 
+
+\begin{equation}
+Ev = \frac{Q_e}{L_w*\rho_{water}}
+\end{equation}
+
+Now the complete energy balance is done for the surface layer  
+\begin{equation}
+	E_{surf} = E + S_{in}-S_{out}+L_{in}-L_{out}+F_{cond}-Q_h-Q_e
 	\label{eq:surfenergy}
 \end{equation}
-and the layer below
+and the second layer:
 \begin{equation}
 E_{ground} = E-F_{cond}
 	\label{eq:groundenergy}
 \end{equation}
-In Eq. (\ref{eq:surfenergy}) and Eq. (\ref{eq:groundenergy}) $E$ is the energy contained in the layer from the previous timestep. Using these two energy terms and the depth of the respective layer, one can obtain the layer temperature through this equation;
+In Eq. (\ref{eq:surfenergy}) and Eq. (\ref{eq:groundenergy}) $E$ is the energy contained in the layer from the previous timestep. Using these two energy terms and the depth, $d$, of the respective layer, one can obtain the layer temperature through Eq. (\ref{eq:layertemp}):
 \begin{equation}
-	T = E_{layer}/c_h*depth
+	T = \frac{E_{layer}}{c_h*d}
 	\label{eq:layertemp}
 \end{equation}
 
-In Eq. (\ref{eq:layertemp}) $c_h = 2.2*10^6 [Jm^{-3}K^{-1}]$ is the heat capacity of rock and $depth$ is the depth of the respective layer.   
+In Eq. (\ref{eq:layertemp}) $c_h = 2.2*10^6 [Jm^{-3}K^{-1}]$ is the heat capacity of rock.  
 
 
 \subsection{Water Balance}
-The water balance is based on conservation of mass, and describes the flow of water into and out of a closed system. This system may for example be a catchment, a lake or a column of soil. Used in areas like agriculture, runoff assessment or pollution control, making a water balance is a neat way to keep track of where the water in your system has come from and where it is going.  
-//
-To quantitatively study the water balance it is necessary to distinguish the different contributing processes. In its simplest form, the water balance can be written as \cite{dingman} 
+The water balance is based on conservation of mass, and describes the flow of water into and out of a closed system. This system may for example be a catchment, a lake or a column of soil. Used in areas like agriculture, runoff assessment or pollution control, making a water balance is a neat way to keep track of where the water in your system has come from and where it is going. 
+
+To quantitatively study the water balance it is necessary to distinguish the different contributing processes. In its simplest form, the water balance can be written as 
 \begin{equation}
-	S = P - E - R - G 
+	S = P - Ev - R - G 
 	\label{eq:waterbalance}
 \end{equation}
 
-In Eq. \ref{eq:waterbalance} $P$ is precipitation $[$unit of height$]$, $E$ is evaporation $[$unit of height$]$, $R$ is runoff $[$unit of height$]$ out of the region and $G$ is the groundwater flow or subsurface runoff $[$unit of height$]$. If several point in a grid were to be evaluated the the fluxes $R$ and $G$ should include both incoming and outgoing components. In this model no $R_{in}$ or $G_{in}$ are taken into account for simplification.   
+In Eq. \ref{eq:waterbalance} $P$ is precipitation, $Ev$ is evaporation, $R$ is runoff out of the region and $G$ is the groundwater flow or subsurface runoff \cite{dingman}. If several points in a grid were to be evaluated then the fluxes $R$ and $G$ should include both incoming and outgoing components. For simplification, neither $R_{in}$ or $G_{in}$ are considered in this model.   
 
-In this model the surface energy balance becomes important as the water balance is only calculated for $T_{surf}$ and $T_{ground}$ $>=0$. This means that once the water is frozen the water balance remains unchanged. Once water is unfrozen a so-called \textit{bucket-model} is applied, meaning that surface runoff $R$ in Eq. (\ref{eq:waterbalance}) is determined as
+In this model the surface energy balance becomes important as the water balance is only calculated for $T_{surf}$ and $T_{ground}$ $>=0$. This means that once the water is frozen the water balance remains unchanged. Once water is unfrozen the surface runoff $R$ in Eq. (\ref{eq:waterbalance}) is defined as
 \begin{equation}
-	R = max(0, P-E-G-B)
+	R = max(0, P-Ev-G-d)
 	\label{eq:runoff}
 \end{equation}  
-where $B$ is the bucket depth, simulating the total soil depth where water can be stored. It is evident from Eq. (\ref{eq:runoff}) that that surface runoff is highly dependent on the bucket depth, but also on the relative sizes of $P$, $E$ and $G$. In particular, one should see a increased runoff for consecutive days with heavy rainfall especially for shallow soil.  
-
-\subsection{Area}
-In this study forcing data from Finse is used in the bucket model. Located at 1222 meters above sea level, on the northwestern part of the Hardangervidda plateau in Norway, Finse has a rather oceanic climate with mild winters for its altitude and cool summers \cite{finse}. Winter temperatures in the range of -20\textdegree C and summer temperatures in the range of 20\textdegree C is not uncommon. Monthly average precipitation was around 80mm between March 2019 and March 2020, peaking in September and October. Finse is very exposed to winds and frequently experiences winds in the range of 15-25 m/s \cite{yr}. 
-
-\textbf{Something of choice of soil depth}. 
-Two experiments will be done with the bucket model, one with a fixed initial water level for each bucket depth and one with a initial water level equal to half the bucket depth for each bucket depth. For the fixed bucket depth 0.1m is chosen. Finse is well above the tree line, and with very sparse vegetation and significant areas of bare mountain this serves as a estimate of averaged initial water content.     
-
-\section{Method}
-\subsection{Implementation of Algorithm}
-The code: Starts of with if statement to ensure no freezing in the system. Here saturation is defined as water level divided by the bucket depth. Evapotranspiration is calculated using the $Q\_eq$-script with temperature, absolute humidity, wind speed and saturation as input. Now the water balance is calculated with no-freezing conditions. Water level is adjusted to be rainfall - evapotranspiration - subsurface runoff added to the water level from the previous timestep. Then the surface runoff is defined as the excess water when subtracting the bucket depth from the water level. 
-
-
-MAIN POINT: Describe how the loop works and about the other helping-scripts in use. 
+where $d$ is the bucket depth, simulating the total soil depth where water can be stored. It is evident from Eq. (\ref{eq:runoff}) that that surface runoff is highly dependent on the bucket depth, but also on the relative sizes of $P$, $Ev$ and $G$. In particular, one should see a increased runoff for consecutive days with heavy rainfall especially for shallow soil.  
+Once the precipitation soaks into the ground drainage becomes important. A drainage constant is set to 1 mm/day, implying that a deeper bucket will last longer before surface runoff occurs. 
 
 \subsection{Forcing Data}
 
 This simple \textit{bucket model} used in this project is dependent on forcing to function as intended. Windspeed, air temperature, rainfall, relative humidity, specific humidity, shortwave incoming radiation and longwave incoming radiation from 2nd of October 2014 to 16th of March 2019 is provided by the Applications of Research to Operations at Mesoscale (AROME) model. This convection-permitting model is a high resolution model operated by MetCoOp, an collaborative effort between the Swedish Meteorological and Hydrological Institute and the Norwegian Meteorological Institute \cite{muller}. 
 
+\subsection{Area}
+In this study forcing data from Finse is used to force the bucket model. Located at 1222 meters above sea level, on the northwestern part of the Hardangervidda plateau in Norway, Finse has a rather oceanic climate with mild winters for its altitude and cool summers \cite{finse}. Winter temperatures in the range of -20\textdegree C and summer temperatures in the range of 20\textdegree C is not uncommon. Monthly average precipitation was around 80mm between March 2019 and March 2020, peaking in September and October. Finse is very exposed to winds and frequently experiences winds in the range of 15-25 m/s \cite{yr}. 
+
+\subsection{Choosing bucket depth}
+Choosing size of the buckets in the model is done to best simulate the actual conditions at Finse. Located at relatively high altitude with very sparse vegetation the bucket depths is set to 0.2m, 0.4m, 0.6m, 0.8m and 1.0. This selection should cover the most common range of soil depths in Finse.
+
+\textbf{Two experiments will be done with the bucket model, one with a fixed initial water level for each bucket depth and one with a initial water level equal to half the bucket depth for each bucket depth. For the fixed bucket depth 0.1m is chosen. Finse is well above the tree line, and with very sparse vegetation and significant areas of bare mountain this serves as a estimate of averaged initial water content. YOU ARE NOT ACTUALLY DOING THIS YET}    
+
+Alternatively, run two versions one with freezing and one without. 
+
+
+\section{Model Build}
+
+Being a very simple surface energy balance model, it is essentially build within two for-loops and a simple if-statement. Outermost is the loop iterating over the different bucket depths. Within is all necessary constants defined. Thereafter the surface energy balance and water balance is calculated for each timestep. The model is designed to develop surface- and subsurface runoff, but only if the temperature of the two soil layers are above freezing. Scripts associated with the model can be found in the GitHub link provided on the first page of the paper.         
 
 \section{Results}
 Explain the weather situation/data over the two years. Especially precipitation (with or without freezing.)
@@ -194,7 +209,7 @@ The fact that the 0.6 meter bucket in  Figure(\ref{fig:bucket_fixed}) almost mad
 	\label{fig:evaporation}
 \end{figure} 
 \\
-
+\textbf{vurder om du vil ke drainage constant til emre enn 1, vil si at det er realistisk med litt høyere verdi?}
 \section{Future Work}
 calculate how much runoff we have in percent from precipitation
 caculate rates at with saturation increasesdecreases

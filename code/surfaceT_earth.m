@@ -2,22 +2,22 @@
 %heat flux and sensible heat flux
 
  %parameters
-result_water = []
-result_surface = []
-result_subsurface = []
-result_evaporation = []
-result_saturation = []
+result_water = [];
+result_surface = [];
+result_subsurface = [];
+result_evaporation = [];
+result_saturation = [];
 
 for bucket_depth = 0.2:0.2:1,2;
+%for bucket_depth = 0.3:0.3:1.5;
     water_level = 0.1;
-    %disp(albedo) %added just to see if t completes each iteration
     c_h = 2.2e6; % heat capacity of rock [J/m3K]
     K = 3; % thermal conductivity of rock [W/m K]
-    d_1 = 0.1; % thickness of surface grid cell [m]
-    d_2 = 0.5; %thickness of second grid cell [m]
+    d_1 = 0.3*bucket_depth; % thickness of surface grid cell [m]
+    d_2 = 0.7*bucket_depth; %thickness of second grid cell [m]
     albedo = 0.2; %albedo of surface
     %bucket_depth = 0.5; % maximum depth of baucket for storage of water [m]
-    drainage_constant = 1; %mm/day subsurface runoff for saturation = 1
+    drainage_constant = 2; %mm/day subsurface runoff for saturation = 1
 
     startTime = 0; % [days]
     endTime = 2.*365;
@@ -56,9 +56,9 @@ for bucket_depth = 0.2:0.2:1,2;
     for t = startTime:timestep:endTime
         %water balance - rainfall and subsurface outflow, only if ground is not
         %frozen
-         %water_in_rainfall = interpolate_in_time(t, rainfall) ./1000 ./ daySec;  %from forcing data, convert mm/day to m/sec
+         water_in_rainfall = interpolate_in_time(t, rainfall) ./1000 ./ daySec;  %from forcing data, convert mm/day to m/sec
         if T_1>=0 && T_2>= 0  %only if the ground is unfrozen
-           water_in_rainfall = interpolate_in_time(t, rainfall) ./1000 ./ daySec;  %from forcing data, convert mm/day to m/sec
+           %water_in_rainfall = interpolate_in_time(t, rainfall) ./1000 ./ daySec;  %from forcing data, convert mm/day to m/sec
             saturation =  water_level ./ bucket_depth;
             water_out_subsurface_runoff = drainage_constant ./1000 ./ daySec .* saturation;
         else
@@ -125,31 +125,31 @@ for bucket_depth = 0.2:0.2:1,2;
 end
 
 %%
-figurepath = 'C:/Users/Eirik N/Documents/UiO/GEO4432/figures'
-P1 = movmean(rain_store*1000*daySec,8,'Endpoints','discard')
+figurepath = 'C:/Users/Eirik N/Documents/UiO/GEO4432/figures';
+P1 = movmean(rain_store*1000*daySec,8,'Endpoints','discard');
 
 figure
 hold all, grid on
-plot(result_water(:,1), 'linewidth',1), plot(result_water(:,2), 'linewidth',1), plot(result_water(:,3), 'linewidth',1)
-plot(result_water(:,4), 'linewidth',1), plot(result_water(:,5), 'linewidth',1)
-res = rescale(P1,0,1.2)
-p1=plot(res,'color','black'),p1.Color(4)=0.25;
+plot(result_water(:,1), 'linewidth',1); plot(result_water(:,2), 'linewidth',1); plot(result_water(:,3), 'linewidth',1);
+plot(result_water(:,4), 'linewidth',1); plot(result_water(:,5), 'linewidth',1);
+res = rescale(P1,0,1.2);
+p1=plot(res,'color','black');p1.Color(4)=0.25;
 title('Water Level with varying bucket depth')
 xlabel('Time [3h]'), ylabel('Water level [m]')
-lgd = legend('0.2','0.4','0.6','0.8','1.0','Precip','Location','northwest')
+lgd = legend('0.2','0.4','0.6','0.8','1.0','Precip','Location','northwest');
 title(lgd,'Bucket Depth [m]')
-saveas(gcf,[figurepath,'/bucket_depth_fixed.pdf']);
+%saveas(gcf,[figurepath,'/bucket_depth_fixed.pdf']);
 %%
 figure, hold all, grid on
-R = movmean(result_surface,8,'Endpoints','discard')
-res = rescale(P1,0,70)
-p1=plot(R(:,1),'-','LineWidth',1), p2 = plot(R(:,2),'-', 'LineWidth',1) 
-p3=plot(R(:,3),'-','LineWidth',1), p4 = plot(R(:,4),'-', 'LineWidth',1)
-p5 = plot(R(:,5),'-','LineWidth',1)
-p=plot(res,'color','black'),p.Color(4)=0.25;
+R = movmean(result_surface,8,'Endpoints','discard');
+res = rescale(P1,0,70);
+p1=plot(R(:,1),'-','LineWidth',1); p2 = plot(R(:,2),'-', 'LineWidth',1); 
+p3=plot(R(:,3),'-','LineWidth',1); p4 = plot(R(:,4),'-', 'LineWidth',1);
+p5 = plot(R(:,5),'-','LineWidth',1);
+p=plot(res,'color','black');p.Color(4)=0.25;
 title('Surface Runoff with varying bucket depth')
 xlabel('Time [3h]'), ylabel('Surface Runoff [mm/day]')
-lgd = legend('0.2','0.4','0.6','0.8','1.0','Precip','Location','northwest')
+lgd = legend('0.2','0.4','0.6','0.8','1.0','Precip','Location','northwest');
 title(lgd,'Bucket Depth [m]')
 %saveas(gcf,[figurepath,'/runoff.pdf']);
 %%
@@ -159,20 +159,20 @@ plot(result_subsurface(:,1)), plot(result_subsurface(:,2)), plot(result_subsurfa
 plot(result_subsurface(:,4)), plot(result_subsurface(:,5))
 title('Subsurface Runoff with varying bucket depth')
 xlabel('Time'), ylabel('Surface Runoff')
-lgd = legend('0.5','0.6','0.7','0.8','0.9','Location','southeast')
+lgd = legend('0.5','0.6','0.7','0.8','0.9','Location','southeast');
 title(lgd,'Bucket Depth [m]')
 %saveas(gcf,[figurepath,'/bucket_depth_subsurfacerunoff.pdf']);
 %%
-S = movmean(result_subsurface,8,'Endpoints','discard')
+S = movmean(result_subsurface,8,'Endpoints','discard');
 
 figure
 plot(S*100)
 %%
 %moving mean of precip
-P = movmean(rainfall,8,'Endpoints','discard')
+P = movmean(rainfall,8,'Endpoints','discard');
 
 fig = figure;
-left_color=[1 0 0], right_color=[0 0 0]
+left_color=[1 0 0]; right_color=[0 0 0];
 set(fig,'defaultAxesColorOrder',[left_color; right_color]);
 
 hold all, grid on
@@ -182,17 +182,17 @@ ylabel('Temperature [{\circ}C]')
 plot(Tair,'linewidth',0.6) 
 yyaxis right
 ylabel('Precipitation [mm/day]')
-p1=plot(rainfall,'linewidth',1), p1.Color(4)=0.3;
+p1=plot(rainfall,'linewidth',1); p1.Color(4)=0.3;
 plot(P, '-','linewidth',1)
 legend("Temp", "Precip. (data)","Precip. (daily averaged)")
 xlabel('Time [3h]')
 title("Forcing data, Finse")
-saveas(gcf,[figurepath,'/forcing_finse.pdf']);
+%saveas(gcf,[figurepath,'/forcing_finse.pdf']);
 
 %%
-P1 = movmean(rain_store*1000*daySec,8,'Endpoints','discard')
+P1 = movmean(rain_store*1000*daySec,8,'Endpoints','discard');
 fig = figure;
-left_color=[1 0 0], right_color=[0 0 0]
+left_color=[1 0 0]; right_color=[0 0 0];
 set(fig,'defaultAxesColorOrder',[left_color; right_color]);
 
 hold all, grid on
@@ -206,26 +206,26 @@ plot(P1,'linewidth',0.8)
 legend("Surface temp.", "Precip.")
 xlabel('Time [3h]')
 title("Model, Finse")
-saveas(gcf,[figurepath,'/precip.png']);
+%saveas(gcf,[figurepath,'/precip.png']);
 
 %%
-P1 = movmean(rain_store*1000*daySec,8,'Endpoints','discard')
+P1 = movmean(rain_store*1000*daySec,8,'Endpoints','discard');
 figure, hold all, grid on
-res = rescale(P1,0,20)
-E=result_evaporation*1000*daySec
-p1=plot(E(:,1),'-','LineWidth',1), p2 = plot(E(:,2),'-', 'LineWidth',1) 
-p3=plot(E(:,3),'-','LineWidth',1), p4 = plot(E(:,4),'-', 'LineWidth',1)
-p5 = plot(E(:,5),'-','LineWidth',1)
-p=plot(res,'color','black'),p.Color(4)=0.25;
+res = rescale(P1,0,20);
+E=result_evaporation*1000*daySec;
+p1=plot(E(:,1),'-','LineWidth',1); p2 = plot(E(:,2),'-', 'LineWidth',1); 
+p3=plot(E(:,3),'-','LineWidth',1); p4 = plot(E(:,4),'-', 'LineWidth',1);
+p5 = plot(E(:,5),'-','LineWidth',1);
+p=plot(res,'color','black');p.Color(4)=0.25;
 title('Evaporation with varying bucket depth')
 xlabel('Time [3h]'), ylabel('Evaporation [mm/day]')
-lgd = legend('0.2','0.4','0.6','0.8','1.0','Precip','Location','northwest')
+lgd = legend('0.2','0.4','0.6','0.8','1.0','Precip','Location','northwest');
 title(lgd,'Bucket Depth [m]')
-saveas(gcf,[figurepath,'/evaporation.png']);
+%saveas(gcf,[figurepath,'/evaporation.png']);
 %%
 %calculate how much runoff we have in percent from precipitation
-fac = 1000*daySec
-test = result_surface
+fac = 1000*daySec;
+test = result_surface;
 
 figure
 plot(test)
