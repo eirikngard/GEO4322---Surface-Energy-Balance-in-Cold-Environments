@@ -24,10 +24,10 @@
 \begin{@twocolumnfalse}
 \maketitle
 \begin{abstract}
-In this paper a simple bucket model has been used to model the surface energy balance and the water balance with different soil depths over a two-year period. Water level, saturation, surface runoff and energy fluxes is analysed for bucket depths of 0.1, 0.5 and 0.9 meters.  With a freezing condition prohibiting the soil water level to rise during periods of temperatures below zero, the deepest bucket almost went through the entire model run without reaching saturation. The other buckets saturated quickly resulting in both surface- and subsurface runoff relatively fast after rainfall events. The soil temperature variations was greatest for the shallowest bucket, causing this bucket to have largest fluctuations in latent heat, sensible heat, conduction and longwave radiation. 
+In this paper a simple bucket model has been used to model the surface energy balance and the water balance with different soil depths over a two-year period. Water level, saturation, surface runoff and energy fluxes is analysed for bucket depths of 0.1, 0.5 and 0.9 meters.  With a freezing condition prohibiting the soil water level to rise during periods of temperatures below zero, the deepest bucket almost went through the entire period without reaching saturation. The other buckets saturated quickly resulting in both surface- and subsurface runoff relatively fast after rainfall events. The soil temperature variations was greatest for the shallowest bucket, causing this bucket to experience largest fluctuations in latent heat, sensible heat, conduction and longwave radiation. 
 \end{abstract}
 
-All material for this project may be found on 
+All material used in this project may be found on 
 \url{https://github.com/eirikngard/GEO4322---Surface-Energy-Balance-in-Cold-Environments}
 
 \end{@twocolumnfalse}
@@ -35,11 +35,11 @@ All material for this project may be found on
 \
 \section{Introduction}
 
-The main scope of the paper is to investigate how the water- and energy balance in a simple surface energy balance model is affected by various bucket depths. \textit{Bucket depth} is analogous to \textit{soil depth}, meaning that a bucket with water represents soil on top of bedrock on a confined area. Like in nature, pouring water into the bucket beyond its capacity will cause surface runoff. This feature is modelled in its simplest way by defining the saturation of the bucket to be water level divided by bucket depth. Hence, a deeper bucket should experience less surface runoff compared to a shallow bucket. Subsurface flow is also modelled with a linear relationship to the 
-\\
+The main scope of the paper is to investigate how the water- and energy balance in a simple surface energy balance model is affected by various bucket depths. \textit{Bucket depth} is analogous to \textit{soil depth}, meaning that a bucket with water represents soil on top of bedrock on an confined area. Pouring water into the bucket beyond its capacity will cause surface runoff. This feature is modelled in its simplest way by defining the saturation of the bucket to be water level divided by bucket depth. Hence, a deeper bucket should experience less surface runoff compared to a shallow bucket. Subsurface flow is also modelled with a linear relationship to the 
 \\
 saturation. The surface energy balance 
 is of great importance to the bucket model since it dictates the water balance by defining whether the ground is frozen or not. In reality, surface runoff may occur even if the ground is frozen, but for simplicity the model allows no surface runoff once the ground temperature is below zero. Also, the modelled surface temperature is very important as it is a key component of the turbulent fluxes and radiative terms. Keeping the energy input to a layer of soil constant should result in higher temperature for a shallow layer than a thick layer, hence making most energy fluxes into or out of a thin layer the largest. 
+
 The paper is structured as follows. Section 2 contains theory. Section 3 describes how the model is build. Section 4 is results and section 5 is discussion. 
 \
 \section{Theory}
@@ -47,7 +47,7 @@ The paper is structured as follows. Section 2 contains theory. Section 3 describ
 
 \subsection{Surface Energy Balance}
 
-The surface energy balance is calculated for daily timesteps. Initially, the following forcing terms are given through point  measurements: Air temperature $T_{air}$, precipitation, incoming shortwave $S_{in} $and longwave radiation $L_{in}$, windspeed and specific humidity.
+The surface energy balance is calculated for daily timesteps. Initially, the following forcing terms are given through point  measurements: Air temperature $T_{air}$, precipitation, incoming shortwave, $S_{in}$, and longwave radiation, $L_{in}$, windspeed and specific humidity.
 Shortwave refelced radiation is calculated using the albedo, $\alpha$, in Eq. (\ref{eq:shortwave}).
 \begin{equation}
 	S_{out} = \alpha * S_{in}
@@ -62,7 +62,7 @@ Albedo is set to 0.2. Stefan-Boltzmann law is then used to calculate the longwav
 \end{equation}
 where $\sigma$ is the Stefan-Boltzmann constant equal to $5.670*10^8 \; Wm^{-2}K^{-4}$ and $T_{surf}$ is the surface temperature. 
 
-Essential to the surface energy balance is also the conductive ground heat flux between the surface with depth $d_{surf}$, and the layer below below with depth $d_{ground}$. Ideally a model should use any layers, but for simplification only one layer is used in addition to the surface layer. The conductive heat flux between the first and the second layer is calculated using Fourier's law of heat conduction:
+Essential to the surface energy balance is also the conductive ground heat flux between the surface with depth $d_{surf}$, and the layer below below with depth $d_{ground}$. Ideally a model should use many layers, but for simplification only one layer is used in addition to the surface layer. The conductive heat flux between the first and the second layer is calculated using Fourier's law of heat conduction:
 
 \begin{equation}
 F_{cond} = 
@@ -82,7 +82,7 @@ Potential latent heat is calculated through
 \begin{equation}
 Q_{e pot} = \frac{-\rho_{air}*L_w*\kappa^2*u}{log(z/z_0)}*\frac{(q-e_s)/p}{log(z/z_0)}
 \end{equation}
-where the latent heat flux is dependent on saturation, $S$ and is calculated like this:
+where the latent heat flux is dependent on saturation, $S$, and is calculated like this:
 \begin{equation}
 Q_e = S*Q_{e pot}
 \label{eq:latentheat}
@@ -93,7 +93,7 @@ In Eq. (\ref{eq:latentheat}) saturation is defined to be
 S = \frac{Water Level}{Bucket Depth}
 \end{equation}
 
-To be used in the water balance, the evaporation, $E$, is: 
+To be used in the water balance, the evaporation, $Ev$, is: 
 
 \begin{equation}
 Ev = \frac{Q_e}{L_w*\rho_{water}}
@@ -123,33 +123,33 @@ The water balance is based on conservation of mass, and describes the flow of wa
 
 To quantitatively study the water balance it is necessary to distinguish the different contributing processes. In its simplest form, the water balance can be written as \cite{dingman} 
 \begin{equation}
-	S = P + Ev + R + G 
+	\Delta S = P - Ev + R_{in} - R_{out} + G_{in} - G_{out} 
 	\label{eq:waterbalance}
 \end{equation}
 
-In Eq. \ref{eq:waterbalance} $P$ is precipitation, $Ev$ is evaporation, $R$ is runoff out of the region and $G$ is the groundwater flow or subsurface runoff \cite{dingman}. If several points in a grid were to be evaluated then the fluxes $R$ and $G$ should include both incoming and outgoing components. For simplification, neither $R_{in}$ or $G_{in}$ are considered in this model.   
+In Eq. \ref{eq:waterbalance} $P$ is precipitation, $Ev$ is evaporation, $R$ is runoff and $G$ is the groundwater flow or subsurface runoff \cite{dingman}. If several points in a grid were to be evaluated then the fluxes $R$ and $G$ should be evaluated, but for simplification neither $R_{in}$ or $G_{in}$ are considered in this model. $\Delta S$ is the resulting storage of water.    
 
 In this model the surface energy balance becomes important as the water balance is only calculated for $T_{surf}$ and $T_{ground}$ $>=0$. This means that once the water is frozen the water balance remains unchanged. Once water is unfrozen the surface runoff $R$ in Eq. (\ref{eq:waterbalance}) is defined as
 \begin{equation}
 	R = max(0, P-Ev-G-d)
 	\label{eq:runoff}
 \end{equation}  
-where $d$ is the bucket depth, simulating the total soil depth where water can be stored. It is evident from Eq. (\ref{eq:runoff}) that that surface runoff is highly dependent on the bucket depth, but also on the relative sizes of $P$, $Ev$ and $G$. In particular, one should see a increased runoff for consecutive days with heavy rainfall especially for shallow soil.  
-Once the precipitation soaks into the ground drainage becomes important. A drainage constant is set to 1 mm/day, implying that a deeper bucket will last longer before surface runoff occurs. 
+where $d$ is the bucket depth, simulating the total soil depth where water can be stored. It is evident from Eq. (\ref{eq:runoff}) that that surface runoff is highly dependent on the bucket depth, but also on the relative sizes of $P$, $Ev$ and $G$. In particular, one should see a increased runoff for consecutive days with heavy rainfall, especially for shallow soil.  
+Once the precipitation soaks into the ground drainage becomes important. A drainage constant is set to 1.5 mm/day, implying that a deeper bucket will last longer before surface runoff occurs. 
 
 \subsection{Forcing Data}
 
-This simple \textit{bucket model} used in this project is dependent on forcing to function as intended. Windspeed, air temperature, rainfall, relative humidity, specific humidity, shortwave incoming radiation and longwave incoming radiation from 2nd of October 2014 to 16th of March 2019 is provided by the Applications of Research to Operations at Mesoscale (AROME) model. This convection-permitting model is a high resolution model operated by MetCoOp, an collaborative effort between the Swedish Meteorological and Hydrological Institute and the Norwegian Meteorological Institute \cite{muller}. 
+The simple \textit{bucket model} used in this project is dependent on forcing to function as intended. Windspeed, air temperature, rainfall, relative humidity, specific humidity, shortwave incoming radiation and longwave incoming radiation from 2nd of October 2014 to 16th of March 2019 is provided by the Applications of Research to Operations at Mesoscale (AROME) model. This convection-permitting model is a high resolution model operated by MetCoOp, an collaborative effort between the Swedish Meteorological and Hydrological Institute and the Norwegian Meteorological Institute \cite{muller}. In this study forcing data from Finse is used to force the bucket model. 
 
 \subsection{Area}
-In this study forcing data from Finse is used to force the bucket model. Located at 1222 meters above sea level, on the northwestern part of the Hardangervidda plateau in Norway, Finse has a rather oceanic climate with mild winters for its altitude and cool summers \cite{finse}. Winter temperatures in the range of -20\textdegree C and summer temperatures in the range of 20\textdegree C is not uncommon. Monthly average precipitation was around 80mm between March 2019 and March 2020, peaking in September and October. Finse is very exposed to winds and frequently experiences winds in the range of 15-25 m/s \cite{yr}. 
+Located at 1222 meters above sea level, on the northwestern part of the Hardangervidda plateau in Norway, Finse has a rather oceanic climate with mild winters for its altitude and cool summers \cite{finse}. Winter temperatures in the range of -20\textdegree C and summer temperatures in the range of 20\textdegree C is not uncommon. Monthly average precipitation was around 80mm between March 2019 and March 2020, peaking in September and October. Finse is very exposed to winds and frequently experiences winds in the range of 15-25 m/s \cite{yr}. 
 
-Figure (\ref{fig:forcing}) shows air temperature and precipitation from the forcing data used in the model. Air temperatures ranges from around -25\textdegree C in winter to around 18\textdegree C in summer. Precipitation values in this dataset was extremely high, some values pushing 300 mm/day. The AROME model is known to overestimate precipitation in mountain regions and in general to overestimate large precipitation events \cite{muller}, but even taken this into account these values are extremely high for this area. One possible explanation for these high values is that all of the precipitation data points could be daily values, even though there are eight data points each day.  Therefore, in lack for more specific details on the dataset and given the seemingly strange values , a moving average for every day was applied. The result is shown as the black bars in Figure (\ref{fig:forcing}), showing the average daily precipitation values with maxima around 90 mm/day. These values appear to be more correct for the area in question.   
+Figure (\ref{fig:forcing}) shows air temperature and precipitation from the forcing data used in the model. Air temperatures ranges from around -25\textdegree C in winter to around 18\textdegree C in summer. Precipitation values in this dataset was extremely high, some values pushing 300 mm/day. The AROME model is known to overestimate precipitation in mountain regions and in general to overestimate large precipitation events \cite{muller}, but even taken this into account these values are extremely large for this area. One possible explanation for these high values is that all of the precipitation data points could be daily values, meaning iy is necessary to average the data points for each day. Therefore, in lack for more specific details on the data points and what units they have, a simple moving average for every day was applied for the plotting procedure. The result is shown as the black bars in Figure (\ref{fig:forcing}), showing the average daily precipitation values with maxima around 90 mm/day. These values still appear be very large compared to historical records found on yr.no \cite{yr} and seklima.no \cite{seklima}, but more correct for the area in question. Doing this dos not change the energy- or water balance in any way.
 
 \begin{figure}[h]
 	\centering 
 	\includegraphics[width=0.5\textwidth]{figures/precip}
-	\caption{Temperature (red) and precipitation(grey) data from forcing file. Daily mean values (black) printed for readability.}
+	\caption{Temperature (red) and precipitationv(blak) from forcing data.}
 	\label{fig:forcing}
 \end{figure}
 
@@ -164,7 +164,7 @@ Being a very simple surface energy balance model, it is essentially build within
 
 \section{Results}
 
-As many of the fluxes in the model is somehow dependent on the surface temperature, it should be the controlling factor for most of them. The surface temperature varies from around -25\textdegree C in winter to around 28\textdegree C in summer. There are greatest temperature variations in the smallest bucket. Overall difference in surface temperature between the different buckets is very small, not greater than around 3\textdegree C from the deepest to the shallowest in most cases. Also, the daily surface temperature variations are far greater during summer than winter.  
+As many of the fluxes in the model is somehow dependent on the surface temperature, it should be the controlling factor for most of them. The surface temperature varies from around -25\textdegree C in winter to around 32\textdegree C in summer as shown in Figure (\ref{fig:t1}). There are greatest temperature variations in the smallest bucket. Overall difference in surface temperature between the different buckets is very small, not greater than around 3\textdegree C from the deepest to the shallowest in most cases. Also, the daily surface temperature variations are far greater during summer than winter.  
 
 \begin{figure}[h]
 	\centering 
@@ -173,7 +173,7 @@ As many of the fluxes in the model is somehow dependent on the surface temperatu
 	\label{fig:t1}
 \end{figure} 
 
-Interestingly the temperature of the second layer is very different when it comes to the different buckets compare to the surface layer. The shallowest bucket appear to have fluctuations very close to that of the surface layer, but in the deeper buckets the temperature variations are drastically damped. For the shallowest bucket the daily temperature difference is close to 10 \textdegree C in most cases, while the deepest bucket only experiences daily variations around 1\textdegree C.     
+Interestingly the temperature of the second layer is very different when it comes to the different buckets compare to the surface layer. Figure (\ref{fig:t2}) indicates that the shallowest bucket appear to have fluctuations very close to that of the surface layer, but in the deeper buckets the temperature variations are drastically damped. For the shallowest bucket the daily temperature difference is close to 10 \textdegree C in most cases, while the deepest bucket only experiences daily variations around 1\textdegree C.     
 
 \begin{figure}[h]
 	\centering 
@@ -183,7 +183,7 @@ Interestingly the temperature of the second layer is very different when it come
 \end{figure} 
 
 
-Values of latent heat ranges from -200 to almost 500 $W/m^2$. The values are in general a lot higher during summer than during winter. This is expected since the summer temperature is much higher than the winter temperature. There are no apparent reaction in latent heat to the precipitation events although actual latent heat should spike after precipitation events. Although increased soil saturation should have substantial impact on the evaporation, but this process may be to fast in reality to be properly captured by this model. Modelled soil saturation increases after precipitation events, but the direct surface evaporation appears to be poorly captured by the model. In general the shallowest bucket experiences strongest evaporation and hence the largest latent heat flux. A shallow bucket allows for quick saturation which in turn enhances evaporation in the model.
+Values of latent heat ranges from -200 to almost 500 $W/m^2$ in accordance with Figure (\ref{fig:latent}). The values are in general a lot higher during summer than during winter. This is expected since the summer temperature is much higher than the winter temperature. There are no apparent reaction in latent heat to the precipitation events although actual latent heat should spike after precipitation events. Although increased soil saturation should have substantial impact on the evaporation, but this process may be to fast in reality to be properly captured by this model. Modelled soil saturation increases after precipitation events, but the direct surface evaporation appears to be poorly captured by the model. In general the shallowest bucket experiences strongest evaporation and hence the largest latent heat flux. A shallow bucket allows for quick saturation which in turn enhances evaporation in the model.
 
 \begin{figure}[h]
 	\centering 
@@ -192,7 +192,7 @@ Values of latent heat ranges from -200 to almost 500 $W/m^2$. The values are in 
 	\label{fig:latent}
 \end{figure} 
 
-During summer and early autumn the shallowest bucket has largest negative sensible heat flux values, while the deepest bucket has the largest positive values. During winter the largest negative sensible heat values are found with the deepest bucket while the largest positive values are a blend from the shallower buckets. Values ranges from 300-500 $W/m^{2}$ in summertime to - 200-300 $W/m^{2}$ in wintertime. Positive flux is heat loss from the surface and negative value are heat gain to the surface. A deep bucket can potentially store more heat copared to a shallow bucket, explaining why the flux is larger for the..
+During summer and early autumn the shallowest bucket has largest negative sensible heat flux values, while the deepest bucket has the largest positive values. During winter the largest negative sensible heat values are found with the deepest bucket while the largest positive values are a blend from the shallower buckets. Values ranges from 300-500 $W/m^{2}$ in summertime to - 200-300 $W/m^{2}$ in wintertime as shown in Figure (\ref{fig:sensible}). Positive flux is heat loss from the surface and negative value are heat gain to the surface. A deep bucket can potentially store more heat compared to a shallow bucket, explaining why the flux is larger for the deepest bucket in winter. 
 %Q_h(Tair, T_1, windspeed)  
 
 \begin{figure}[h]
@@ -204,7 +204,7 @@ During summer and early autumn the shallowest bucket has largest negative sensib
 
 In the shallow bucket the surface temperature reacts to the air temperature quicker than with a deeper bucket, meaning that in a deeper bucket the surface temperature is less affected by the air temperature since the entire bucket has a lower temperature. Hence the flux from the air to the ground in winter is largest for a deep bucket. During summer nights the thin layer of soil looses heat to the air quickly making a large positive flux, while during the day the thin layer of soil is heated rapidly making a large negative flux. Both of these processes reqers more time for a deeper bucket. 
 
-The heat flux through conduction is  positive from the second layer up to the surface layer and vice versa. It ranges between 250 and -250 $W/m^2$ and is largest is summertime. Shallow buckets have the largest values, both positive and negative while the deepest bucket have more modest values between 50 and -50 $W/m^2$. This is a direct consequence of the that fact that the shallow bucket has higher temperature compared to the deeper bucket. More available energy allows for more energy to be conducted to the surrounding layer of soil.
+The heat flux through conduction is  positive from the second layer up to the surface layer and vice versa. It ranges between 250 and -250 $W/m^2$ and is largest is summertime as displayed in Figure (\ref{fig:conduction}). Shallow buckets have the largest values, both positive and negative while the deepest bucket have more modest values between 50 and -50 $W/m^2$. This is a direct consequence of the that fact that the shallow bucket has higher temperature compared to the deeper bucket. More available energy allows for more energy to be conducted to the surrounding layer of soil.
 
 \begin{figure}[h]
 	\centering 
@@ -224,7 +224,7 @@ Moving over to the water balance Figure(\ref{fig:bucket_fixed}) shows how the wa
 	\label{fig:bucket_fixed}
 \end{figure}
 
-Since all of the buckets eventually reaches saturation, surface runoff will occur as shown in Figure (\ref{fig:runoff}). The runoff values are relatively high compared to the precipitation values, apparently being close t the full size of the precipitation event. Each of the buckets experiences runoff where one deeper bucket also experiences runoff. Towards the end of the plot in Figure (\ref{fig:runoff}) it may look like only the deepest bucket experiences runoff, but since the deepest bucket experiences runoff at this point in time, all of the other buckets also experiences runoff here.  
+Since all of the buckets eventually reaches saturation, surface runoff will occur as shown in Figure (\ref{fig:runoff}). The runoff values are relatively high compared to the precipitation values, apparently being close to the full size of the precipitation event. Each of the buckets experiences runoff where one deeper bucket also experiences runoff. Towards the end of the plot in Figure (\ref{fig:runoff}) it may look like only the deepest bucket experiences runoff, but since the deepest bucket experiences runoff at this point in time, all of the other buckets also experiences runoff here.  
 
 \begin{figure}[h]
 	\centering 
@@ -237,12 +237,11 @@ Since all of the buckets eventually reaches saturation, surface runoff will occu
 
 Overall the modelled energy- and water balance appear to fit the actual conditions at Finse quite well. None of the modelled fluxes are surprisingly large or small. Modelling these balances with different soil depths proved to showcase some interesting features of the water- and energy balance.  
 
-One strange feature of the model is that the water level appears to be rising and rising throughout the two-year period. This is certainly not the case in the true world and may indicate that the deepest bucket is actually too deep to represent this area. This might also be an effect of other parameters in the model being chosen too large or too small. Increasing the drainage constant would solve this problem, but on the other hand this might cause the shallow buckets to drain too fast. It may also be cause by missing drainage features in the model such as streams and creeks moving water through or away from the soil. 
+One strange feature of the model is that the water level appears to be rising and rising throughout the two-year period. This is certainly not the case in the true world as and may indicate that the deepest bucket is actually too deep to represent this area. This might also be an effect of other parameters in the model being chosen too large or too small. Increasing the drainage constant would solve this problem, but on the other hand this might cause the shallow buckets to drain too fast. It may also be caused by missing drainage features in the model such as streams and creeks moving water through or away from the soil. 
 
 One obvious shortcoming of the model is the simplification of the water balance once the ground temperature in both layers drops below freezing. Since this simplification applies to the periods of the year where the fluxes of water and energy generally not are huge, it might be the case that the actual balances are not altered too much. Despite this some details in the balances may be left out of the picture. Processes like snow infiltration and refreezing of water is not captured by this model. These factor are some out of several that might change the properties of surface runoff and evaporation to mention some. 
 
-Additionally, snow and snowcover is not included in the model. Snow has a great impact on the surface energy balance because of its reflecting abilities. With an high albedo compared to bare soil or rock, snow will reflect most of the incoming shortwave radiation. This drastically reduces the amount of available energy to the environment, hence reducing energy available for evaporation and the sizes of the sensible and latent heat flux. Also, at Finse a lot of the precipitation used in this model falls as snow rather than rain. Including this would further implicate the energy balance since less liquid water would be available for evaporation, and more energy would be spent to melt snow towards the summer month. A suggestion to improvement of this simplified energy balance model would be to incorporate the effect of snow, and investigate how the fluxes would look like for different soil depths with this improvement.     
-
+Additionally, snow and snowcover is not included in the model. Snow has a great impact on the surface energy balance because of its reflecting abilities. With an high albedo compared to bare soil or rock, snow will reflect most of the incoming shortwave radiation. This drastically reduces the amount of available energy to the environment, hence reducing energy available for evaporation and the sizes of the sensible and latent heat flux. Also, at Finse a lot of the precipitation used in this model falls as snow rather than rain. Including this would further implicate the energy balance since less liquid water would be available for evaporation, and more energy would be spent to melt snow towards the summer month. A suggestion to improvement of this simplified model would be to incorporate the effect of snow to see how the different buckets are affected in terms of the water- and energy balance.
 \twocolumn
 [
 \begin{@twocolumnfalse}
@@ -259,8 +258,8 @@ Third Edition \\
 Waveland Press, 2015.\\
 
 \bibitem{labus}
-Labus, M., Labus, K. Thermal conductivity and diffusivity of fine-grained sedimentary rocks. J Therm Anal Calorim 132, 1669–1676 (2018). 
-URL: https://doi.org/10.1007/s10973-018-7090-5
+Labus, M., Labus, K. Thermal conductivity and diffusivity of fine-grained sedimentary rocks. J Therm Anal Calorim 132, 1669–1676 (2018). \\
+URL: \url{https://doi.org/10.1007/s10973-018-7090-5}
 
 \bibitem{muller}
 MÜller et al. 2017\\
@@ -273,8 +272,12 @@ Webpage of Finse Alpine Research Ceenter\\
 URL: \url{https://www.finse.uio.no/about/location/}\\
 Visited 20th of April 2020
 
+\bibitem{seklima}
+Historical precipitation records from Finse.\\
+URL: \url{https://seklima.met.no/observations/}
+
 \bibitem{yr}
-Webpage of Nowegian forcasting service YR for historical data for Finse.
+Webpage of Nowegian forcasting service YR for historical data for Finse.\\
 URL: \url{https://www.yr.no/nb/historikk/graf/1-111123/Norge/Vestland/Ulvik/Finse}
 
 

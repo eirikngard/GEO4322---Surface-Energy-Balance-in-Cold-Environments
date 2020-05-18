@@ -152,9 +152,12 @@ P1 = movmean(rain_store*1000*daySec,8,'Endpoints','discard');
 
 figure
 hold all, grid on
-plot(result_water(:,1), 'linewidth',1); plot(result_water(:,2), 'linewidth',1); plot(result_water(:,3), 'linewidth',1);
+plot(t_store + timestamp(1,1),result_water(:,1), 'linewidth',1); 
+plot(t_store + timestamp(1,1),result_water(:,2), 'linewidth',1); 
+plot(t_store + timestamp(1,1),result_water(:,3), 'linewidth',1);
 %plot(result_water(:,4), 'linewidth',1); plot(result_water(:,5), 'linewidth',1);
 res = rescale(P1,0,0.9);
+datetick;
 p1=plot(res,'color','black');p1.Color(4)=0.25;
 title('Water Level with varying bucket depth')
 xlabel('Time [3h]'), ylabel('Water level [m]')
